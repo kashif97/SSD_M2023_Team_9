@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <style>
+    body {
+      background-image: url('images/background.jpg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+    }
+  </style>
+</head>
+<body>
+    <div class="container-header">
+        <h1 class="heading" id="dynamic-heading"></h1>
+      </div>
+      <div class="back-button">
+        <a href="index.html">&#8592; Back</a>
+      </div>
+<div class="center">
+  <div class="image-container">
+    <a href="#" onclick="showPopup('play1_level.html')">
+      <img src="images/easy.jpg" alt="First Image" class="custom-image float-animation">
+    </a>
+  </div>
+  <div class="image-container">
+    <a href="#" onclick="showPopup('play2_level.html')">
+      <img src="images/medium.jpeg" alt="Second Image"class="custom-image float-animation">
+    </a>
+  </div>
+  <div class="image-container">
+    <a href="#" onclick="showPopup('play3_level.html')">
+      <img src="images/hard.jpg" alt="Third Image" class="custom-image float-animation">
+    </a>
+  </div>
+</div>
+
+<div id="popup" class="popup-overlay">
+  <div class="popup-content">
+    <p>Are you ready to play?</p>
+    <button onclick="playGame('Yes')">Yes</button>
+    <button class="no" onclick="playGame('No')">No</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+    const textToWrite = "Let's Play Spot The difference";
+    const writingTextElement = document.getElementById("dynamic-heading");
+    let charIndex = 0;
+  
+    function writeText() {
+      if (charIndex < textToWrite.length) {
+        writingTextElement.textContent += textToWrite[charIndex];
+        charIndex++;
+        setTimeout(writeText, 50);
+      }
+    }
+    writeText();
+  </script>
+</body>
+</html>

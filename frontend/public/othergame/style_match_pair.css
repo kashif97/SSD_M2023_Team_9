@@ -1,0 +1,353 @@
+body {
+  font-family: 'Arial', sans-serif;
+  text-align: center;
+  background-color: #f1f1f1;
+  margin: 0;
+  padding: 0;
+}
+
+.game-container {
+  margin: auto;
+  margin-top: 7%;
+
+  max-width: 1400px;
+  padding: 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(224, 224, 224, 0.5));
+
+
+  border: 2px solid #3a3a3a;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
+}
+
+.game-container h1 {
+  color: #2980b9;
+  font-size: 36px;
+  margin: 20px 0;
+  text-transform: uppercase;
+}
+
+.game-info {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+  
+}
+
+.game-info span {
+  font-size: 20px;
+  color: #555;
+}
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  justify-content: center;
+  margin: 20px 0;
+  
+}
+
+.card {
+  width: 150px;
+  height: 200px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #f5f5f5, #e0e0e0);
+  margin: auto;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-container .card.flipped {
+  cursor: default;
+}
+
+.card-container .card .card-inner {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.3s;
+}
+
+.card-container .card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-container .card .card-front,
+.card-container .card .card-back {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  backface-visibility: hidden;
+}
+
+.card-container .card .card-front {
+  
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-container .card .card-front h2 {
+  font-size: 24px;
+  color: #333;
+}
+
+.card-container .card .card-back {
+background-color: #2980b9;
+color: white;
+border-radius: 10px;
+background-size: cover; /* Use 'cover' to make the image cover the card */
+background-size: 100% 100%;
+transform: rotateY(180deg);
+display: flex;
+align-items: center;
+justify-content: center;
+}
+ /* CSS for the close button */
+ .close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px; /* Larger close button */
+  cursor: pointer;
+  color: #888; /* Gray color */
+}
+
+.close-button:hover {
+  color: #000; /* Darken on hover */
+}
+
+
+
+button:hover {
+  background-color: #45a049;
+}
+.sound-control-button {
+  position: absolute;
+top: 10px;
+right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  font-size: 24px;
+  color: #555;
+  transition: color 0.3s;
+}
+
+.sound-control-button:hover {
+  color: #333;
+}
+#time {
+  font-size: 1.5em;
+  color: #333;
+  font-weight: bold;
+  margin-right: 20px;
+}
+
+/* CSS for the enhanced score display */
+#score {
+  font-size: 1.5em;
+  color: #333;
+  font-weight: bold;
+}
+.checkmark-sign {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #008000; /* Green color for the checkmark */
+  font-size: 12em; /* Increased font size */
+  display: none;
+}
+.cross-sign {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ff001e; /* Red color for the cross */
+  font-size: 12em; /* Increased font size */
+  display: none;
+}
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1;
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(63, 216, 216, 0.608);/* Light gray background */
+  padding: 20px;
+  border-radius: 10px; /* Rounded corners */
+  text-align: center;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+}
+
+/* CSS for the close button */
+.close-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 50px; /*close button */
+  cursor: pointer;
+  color: #060505; /* Gray color */
+}
+
+.close-button:hover {
+  color: #656060; /* Darken on hover */
+}
+
+/* CSS for the play again button */
+button {
+      background-color: #4c53af;
+      color: white;
+      padding: 14px 28px; /* Larger padding */
+      border: none;
+      border-radius: 8px; /* Rounded corners */
+      margin-top: 20px; /* More space between button and content */
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      display: block; /* Make buttons appear one above the other */
+      margin: auto;
+      margin-bottom: 10px; /* Add some space between the buttons */
+    }
+
+button:hover {
+  background-color: #45a049;
+}
+.home-button {
+  position: absolute;
+  top: 15px; 
+  left: 15px; 
+  z-index: 2; 
+  background-color: rgba(52, 152, 219, 0);
+  color: #686565; 
+  border: none;
+  padding: 10px 15px; 
+  border-radius: 5px; 
+  font-size: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; 
+}
+
+.home-button:hover {
+  background-color: rgba(41, 185, 79, 0.7);
+}
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.confetti-land {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.confetti {
+  width: 1rem;
+  height: 1rem;
+  display: inline-block;
+  position: absolute;
+  top: -1rem;
+  left: 0;
+  z-index: 50;
+}
+
+.confetti .rotate {
+  animation: driftyRotate 1s infinite both ease-in-out;
+  perspective: 1000;
+}
+
+.confetti .askew {
+  background: linear-gradient(
+    var(--grad-direction, to bottom),
+    hsl(63, 100%, 50%) 25%,
+    hsl(23, 100%, 50%) 0% 66.667%,
+    hsl(43, 100%, 100%) 0% 100%);
+  transform: skewY(10deg);
+  width: 2rem;
+  height: 3.2rem;
+  animation: drifty 1s infinite alternate both ease-in-out;
+  perspective: 1000;
+  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+}
+
+.confetti:nth-of-type(7n) .askew {
+  animation-delay: -.6s;
+  animation-duration: 2.25s;
+}
+
+/* ... Add other nth-of-type rules here ... */
+
+.confetti:nth-of-type(9n + 8) .rotate {
+  animation-duration: 1.78s;
+}
+
+@keyframes drifty {
+  0% {
+    transform: skewY(10deg) translate3d(-250%, 0, 0);
+  }
+  100% {
+    transform: skewY(-12deg) translate3d(250%, 0, 0);
+  }
+}
+
+@keyframes driftyRotate {
+  0% {
+    transform: rotateX(0);
+  }
+  100% {
+    transform: rotateX(359deg);
+  }
+}
+
+select {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  font-size: 1rem;
+  z-index: 100;
+}
+
+[data-type=leaves] .confetti:nth-child(4n) {
+  color: hsl(343, 80%, 30%);
+}
+
+[data-type=leaves] .confetti:nth-child(4n + 1) {
+  color: hsl(103, 80%, 30%);
+}

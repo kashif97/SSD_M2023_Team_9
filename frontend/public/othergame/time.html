@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+  <style>
+    /* Styles for the button and icon */
+    .sound-control-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 10px;
+      font-size: 24px;
+      color: #555;
+      transition: color 0.3s;
+    }
+
+    .sound-control-button:hover {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <audio id="background-music" autoplay loop>
+    <source src="sounds_effect/6-Happy-Commercial-Piano(chosic.com).mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <button id="toggle-music-button" class="sound-control-button">
+    <i class="fas fa-volume-up"></i>
+  </button>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const backgroundMusic = document.getElementById('background-music');
+      const toggleMusicButton = document.getElementById('toggle-music-button');
+
+      toggleMusicButton.addEventListener('click', function() {
+        if (backgroundMusic.paused) {
+          backgroundMusic.play();
+          toggleMusicButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+        } else {
+          backgroundMusic.pause();
+          toggleMusicButton.innerHTML = '<i class="fas fa-volume-mute"></i>';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

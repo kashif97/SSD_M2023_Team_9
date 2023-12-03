@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="style_match_pair.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+  <style>
+  
+   
+  body {
+      background-image: url('images/7958427.jpg');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+  
+    }
+
+  
+   
+      @keyframes spreadAnimation {
+    from {
+        transform: translateY(50%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+.card-container {
+  
+    animation: spreadAnimation 2s ease-in-out;
+    grid-template-columns: repeat(5, 1fr);
+    
+}
+ 
+
+  
+@media screen and (max-width: 1200px) {
+  .game-container {
+    max-width: 1000px;
+    margin-top: 100px;
+
+  }
+  .card {
+      width: 100px;
+      height: 150px;
+    }
+   
+}
+@media screen and (max-width: 1200px) {
+  .game-container {
+    max-width: 800px;
+    margin-top: 100px;
+
+  }
+  .card {
+      width: 100px;
+      height: 150px;
+    }
+   
+}
+@media screen and (max-width: 720px) {
+  .game-container {
+    max-width: 600px;
+    margin-top: 100px;
+  
+  }
+  .card {
+      width: 100px;
+      height: 150px;
+    }
+   
+
+ 
+}
+@media screen and (max-width: 600px) {
+  .game-container {
+    max-width: 500px;
+    margin-top: 100px;
+  
+  }
+  .card {
+      width: 80px;
+      height: 100px;
+    }
+   
+
+ 
+}
+
+ 
+
+  </style>
+</head>
+<body>
+  <div class="confetti-land">
+    <!-- Confetti will be added dynamically here -->
+  </div>
+  <a href="index.html">
+    <button id="home-button" class="home-button">
+      <i class="fas fa-home"></i>
+    </button>
+  </a>
+  <audio id="background-music" autoplay loop>
+    <source src="sounds_effect/6-Happy-Commercial-Piano(chosic.com).mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <div id="showCrossButton"></div>
+  <div id="showCheckmarkButton" ></div>
+ 
+  <button id="toggle-music-button" class="sound-control-button">
+    <i class="fas fa-volume-up"></i>
+  </button>
+  <div class="game-container">
+    <h1>Animal Matching Game</h1>
+    <div class="game-info">
+      <span id="time">Time: 0:00</span>
+      <span id="score">Score: 0/5</span>
+    </div>
+
+    <div class="card-container">
+     
+    </div>
+  </div>
+
+  <script>
+        document.addEventListener('DOMContentLoaded', function() {
+      const backgroundMusic = document.getElementById('background-music');
+      const toggleMusicButton = document.getElementById('toggle-music-button');
+
+      toggleMusicButton.addEventListener('click', function() {
+        if (backgroundMusic.paused) {
+          backgroundMusic.play();
+          toggleMusicButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+        } else {
+          backgroundMusic.pause();
+          toggleMusicButton.innerHTML = '<i class="fas fa-volume-mute"></i>';
+        }
+      });
+    });
+    let flippedCards = [];
+    let matchedPairs = 0;
+    let score = 0;
+
+
+    let startTime = 0;
+    let timerInterval;
+    let elapsedTimeInSeconds = 0;
+    const maxAllowedTimeInSeconds = 120; 
+
+   
+    const imageUrls = [
+      'images/1.jpg',
+      'images/2.png',
+      'images/3.jpg',
+      'images/4.jpg',
+      'images/5.jpg',
+      'images/6.jpg',
+      'images/7.jpg',
+      'images/8.jpg',
+      'images/9.jpg',
+      'images/horse.jpeg',
+      'images/hen.jpeg'
+    ];
+
+ 
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+   
+    function createImagePairs(imageUrls) {
+      const pairs = [];
+      const selectedIndexes = [];
+      while (pairs.length < 5) {
+        const randomIndex = Math.floor(Math.random() * imageUrls.length);
+        if (!selectedIndexes.includes(randomIndex)) {
+          selectedIndexes.push(randomIndex);
+          pairs.push(imageUrls[randomIndex]);
+        }
+      }
+      return [...pairs, ...pairs];
+    }
+
+   
+    function assignImagesToCards() {
+      const cardContainer = document.querySelector('.card-container');
+      const imagePairs = createImagePairs(imageUrls);
+      shuffleArray(imagePairs);
+
+      imagePairs.forEach((imageUrl, index) => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.onclick = () => flipCard(card);
+
+        const cardInner = document.createElement('div');
+        cardInner.classList.add('card-inner');
+
+        const cardFront = document.createElement('div');
+        cardFront.classList.add('card-front');
+        const cardImage = document.createElement('img');
+    cardImage.src = "images/playing_card_back_by_feivelyn_defaezm-414w-2x.jpg"; // Set the image source
+    cardImage.alt = `Card ${index + 1}`; // Set alt text for accessibility
+    cardFront.appendChild(cardImage);
+
+
+        const cardBack = document.createElement('div');
+        cardBack.classList.add('card-back');
+        cardBack.style.backgroundImage = `url(${imageUrl})`;
+
+        cardInner.appendChild(cardFront);
+        cardInner.appendChild(cardBack);
+        card.appendChild(cardInner);
+        cardContainer.appendChild(card);
+      });
+    }
+
+    function startTimer() {
+      startTime = Date.now();
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      const currentTime = Date.now();
+      elapsedTimeInSeconds = Math.floor((currentTime - startTime) / 1000);
+      const minutes = Math.floor(elapsedTimeInSeconds / 60);
+      const seconds = elapsedTimeInSeconds % 60;
+      document.getElementById('time').textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+      if (elapsedTimeInSeconds >= maxAllowedTimeInSeconds) {
+    stopTimer();
+    showLossPopup();
+      }
+    }
+    function showLossPopup() {
+  const modalContainer = document.createElement('div');
+  modalContainer.className = 'modal';
+
+  const modalContent = document.createElement('div');
+  modalContent.className = 'modal-content';
+
+  const closeButton = document.createElement('span');
+  closeButton.className = 'close-button';
+  closeButton.innerHTML = '&times;';
+  closeButton.onclick = closePopup;
+
+  const modalTitle = document.createElement('h2');
+  modalTitle.textContent = 'Game Over';
+
+  const modalText = document.createElement('p');
+  modalText.textContent = 'Sorry, you ran out of time. Better luck next time!';
+
+  const playAgainButton = document.createElement('button');
+  playAgainButton.textContent = 'Play Again';
+  playAgainButton.onclick = playAgain;
+
+  modalContent.appendChild(closeButton);
+  modalContent.appendChild(modalTitle);
+  modalContent.appendChild(modalText);
+  modalContent.appendChild(playAgainButton);
+
+  modalContainer.appendChild(modalContent);
+  document.body.appendChild(modalContainer);
+
+  modalContainer.style.display = 'block';
+}
+
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+    }
+
+    function flipCard(card) {
+      if (flippedCards.length < 2 && !card.classList.contains('flipped')) {
+        card.classList.add('flipped');
+        flippedCards.push(card);
+        if (flippedCards.length === 2) {
+          setTimeout(checkForMatch, 1000); 
+        }
+      }
+    }
+    function rAudio() {
+   
+      var audio = new Audio('sounds_effect/right.mp3');
+
+      // Play the audiong-answer-20582.mp3
+      audio.play();
+    }
+    function wAudio() {
+     
+      var audio = new Audio('sounds_effect/buzzer-or-wrong-answer-20582.mp3');
+
+      // Play the audio
+      audio.play();
+    }
+
+    function showCheckmarkAndDisable() {
+      rAudio();
+      const showCheckmarkButton = document.getElementById('showCheckmarkButton');
+      const checkmarkSign = document.createElement('div');
+      checkmarkSign.className = 'checkmark-sign';
+      checkmarkSign.innerHTML = '\u2713'; // Unicode for checkmark sign
+      document.body.appendChild(checkmarkSign);
+
+      showCheckmarkButton.disabled = true; // Disable the button
+      checkmarkSign.style.display = 'block';
+
+      setTimeout(() => {
+        checkmarkSign.style.display = 'none'; // Hide the checkmark sign after 1 second
+        showCheckmarkButton.disabled = false; // Enable the button
+      }, 1000);
+    }
+    function showCrossAndDisable() {
+      wAudio();
+      const showCrossButton = document.getElementById('showCrossButton');
+      const crossSign = document.createElement('div');
+      crossSign.className = 'cross-sign';
+      crossSign.innerHTML = '\u2717'; // Unicode for cross sign
+      document.body.appendChild(crossSign);
+
+      showCrossButton.disabled = true; // Disable the button
+      crossSign.style.display = 'block';
+
+      setTimeout(() => {
+        crossSign.style.display = 'none'; // Hide the cross sign after 1 second
+        showCrossButton.disabled = false; // Enable the button
+      }, 1000);
+    }
+   
+    function checkForMatch() {
+      const [card1, card2] = flippedCards;
+      const image1 = card1.querySelector('.card-back').style.backgroundImage;
+      const image2 = card2.querySelector('.card-back').style.backgroundImage;
+
+      if (image1 === image2) {
+     
+        card1.style.display = 'none';
+        card2.style.display = 'none';
+        flippedCards = [];
+        matchedPairs++;
+        score++;
+        document.getElementById('score').textContent = `Score: ${score}/5`;
+        showCheckmarkAndDisable() ;
+        if (matchedPairs === 5) {
+        
+          stopTimer();
+          const randomFact = getRandomAnimalFact();
+          showpopup(5, elapsedTimeInSeconds, randomFact);
+      
+        }
+      } else {
+       
+        card1.classList.remove('flipped');
+        card2.classList.remove('flipped');
+        flippedCards = [];
+        showCrossAndDisable();
+      }
+    }
+    const animalFacts = [
+  "Elephants, the only animals that can't jump, have the largest brains of any land animal.",
+  "Octopuses, with three hearts and blue blood, can regrow lost arms.",
+  "Chameleons change color to communicate, not just to blend in, and their eyes can move independently.",
+  "Giraffes, with seven neck vertebrae like humans, have blue-black tongues up to 45 cm long.",
+  "Dolphins use signature whistles to identify each other and are known for playful behavior and high intelligence.",
+  "Sloths, the slowest mammals, can take up to a month to digest a meal and spend most of their lives hanging upside down.",
+  "Crows, highly intelligent, can solve complex problems and remember human faces for years.",
+  "Blue whales, the largest animals on Earth, and humpback whales, create intricate songs that can last for hours.",
+  "Wood frogs can survive being completely frozen and thaw out later, while golden poison dart frogs are among the most poisonous animals.",
+  "Platypuses, laying eggs and having a duck-like bill and webbed feet, are one of the few mammals with these characteristics.",
+  "Cheetahs, the fastest land animals, can accelerate from 0 to 60 mph in just a few seconds.",
+  "Penguins, despite being birds, are flightless and are excellent swimmers instead.",
+  "Kangaroos use their powerful tails for balance and can jump great distances.",
+  "Honeybees communicate through complex dances to convey information about the location of food sources.",
+  "Pandas have a specialized diet of bamboo and have a 'thumb' to help them grip the bamboo stems.",
+  "Monarch butterflies undertake a remarkable migration, covering thousands of miles to reach their wintering grounds.",
+];
+
+    function showpopup(finalScore, showTime, animalFact) {
+      startConfetti();
+      playAudio();
+      // Create a modal container
+      const modalContainer = document.createElement('div');
+      modalContainer.className = 'modal';
+
+      // Create the modal content
+      const modalContent = document.createElement('div');
+      modalContent.className = 'modal-content';
+
+      // Create a close button
+      const closeButton = document.createElement('span');
+      closeButton.className = 'close-button';
+      closeButton.innerHTML = '&times;';
+      closeButton.onclick = closePopup;
+
+      // Create the content for the modal
+      const modalTitle = document.createElement('h2');
+      modalTitle.textContent = 'You Won';
+
+      const modalText = document.createElement('p');
+      modalText.textContent = 'Congratulations! You won the game.';
+
+      const scoreText = document.createElement('p');
+      scoreText.innerHTML = 'Your final score is: <span id="final-score">' + finalScore + '</span>';
+
+      const timeText = document.createElement('p');
+      timeText.innerHTML = 'Time taken: ' + formatTime(showTime);
+
+      const factText = document.createElement('h3');
+      factText.textContent = 'Random Animal Fact:';
+      const fact = document.createElement('p');
+      fact.textContent = animalFact;
+
+      const playAgainButton = document.createElement('button');
+      playAgainButton.textContent = 'Play Again';
+      playAgainButton.onclick = playAgain;
+
+  const nextLevelButton = document.createElement('button');
+  nextLevelButton.textContent = 'Next Level';
+  nextLevelButton.onclick = goToNextLevel;
+
+      // Append the elements to the modal content
+      modalContent.appendChild(closeButton);
+      modalContent.appendChild(modalTitle);
+      modalContent.appendChild(modalText);
+      modalContent.appendChild(scoreText);
+      modalContent.appendChild(timeText);
+      modalContent.appendChild(factText);
+      modalContent.appendChild(fact);
+      modalContent.appendChild(playAgainButton);
+      modalContent.appendChild(nextLevelButton);
+
+      // Append the modal content to the modal container
+      modalContainer.appendChild(modalContent);
+
+      // Append the modal container to the body
+      document.body.appendChild(modalContainer);
+
+      modalContainer.style.display = 'block';
+    }
+
+    function playAudio() {
+     
+      var audio = new Audio('sounds_effect/crowd.mp3');
+
+      // Play the audio
+      audio.play();
+    }
+
+    function goToNextLevel() {
+  // Add logic to go to the next level
+  // For demonstration purposes, let's redirect to another page
+  window.location.href = 'match_pair_hard.html';
+}
+
+    // Define the closePopup function to close the modal
+    function closePopup() {
+      const modalContainer = document.querySelector('.modal');
+      modalContainer.style.display = 'none';
+    }
+
+    function playAgain() {
+      closePopup();
+      window.location.reload();
+    }
+
+    // Format time as MM:SS
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+
+    // Get a random animal fact
+    function getRandomAnimalFact() {
+      const randomIndex = Math.floor(Math.random() * animalFacts.length);
+      return animalFacts[randomIndex];
+    }
+
+// Define the closePopup function to close the modal
+function closePopup() {
+  const modalContainer = document.querySelector('.modal');
+  modalContainer.style.display = 'none';
+}
+
+function playAgain() 
+{
+ 
+  closePopup();
+  
+ 
+  window.location.reload();
+}
+
+
+ 
+    assignImagesToCards(); 
+    startTimer();
+    var confettiPlayers = [];
+var animationStarted = false;
+
+function makeItConfetti() {
+  var confettiLand = document.querySelector('.confetti-land');
+
+  if (!confettiLand) {
+    return false;
+  }
+
+  for (var i = 0; i < 60; ++i) {
+    var confetti = document.createElement('div');
+    confetti.classList.add('confetti');
+    confetti.innerHTML = '<div class="rotate"><div class="askew"></div></div>';
+    confettiLand.appendChild(confetti);
+
+    var scale = Math.random() * 0.7 + 0.3;
+    var player = confetti.animate([
+      { transform: `translate3d(${(i / 60 * 100)}vw,-5vh,0) scale(${scale}) rotate(0turn)`, opacity: scale },
+      { transform: `translate3d(${(i / 60 * 100 + 10)}vw,105vh,0) scale(${scale}) rotate(${ Math.random() > 0.5 ? '' : '-'}2turn)`, opacity: 1 }
+    ], {
+      duration: Math.random() * 3000 + 4000,
+      iterations: Infinity,
+      delay: -(Math.random() * 7000)
+    });
+
+    confettiPlayers.push(player);
+  }
+}
+
+function startConfetti() {
+  if (!animationStarted) {
+    makeItConfetti();
+    animationStarted = true;
+    document.querySelector('button').style.display = 'none'; // Hide the button after animation starts
+  }
+}
+
+// Initial setup
+onChange({currentTarget: {value: 'bookmarks'}});
+document.getElementById('type').addEventListener('change', onChange);
+
+function onChange(e) {
+  document.body.setAttribute('data-type', e.currentTarget.value);
+  confettiPlayers.forEach(player => player.playbackRate = e.currentTarget.value === 'bookmarks' ? 2 : 1);
+}
+  </script>
+</body>
+</html>

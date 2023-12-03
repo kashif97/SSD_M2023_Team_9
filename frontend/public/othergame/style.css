@@ -1,0 +1,145 @@
+/* CSS code goes here */
+.container{
+    position: relative;
+}
+
+.container-header {
+position: relative;
+text-align: center;
+
+}
+
+.heading {
+font-size: 5vw; 
+color: #080809;
+text-shadow: 2px 2px 4px #fbf8f8; 
+margin-bottom: 20px;
+position: absolute;
+top: 50%;
+left: 50%; 
+transform: translate(-50%, -50%); 
+padding-top: 6%;
+}
+
+.back-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.back-button a {
+  text-decoration: none;
+  padding: 8px 12px; /* Adjust the padding as needed */
+  background-color: #388f99;
+  color: #fff;
+  border-radius: 5px;
+  font-size: 14px; /* Adjust the font size as needed */
+}
+
+.center {
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+}
+
+.image-container {
+text-align: center;
+margin: 3%;
+position: relative;
+border-radius: 50%;
+}
+
+img:hover {
+animation: shake 0.5s;
+animation-iteration-count: infinite;
+border-radius: 50%;
+}
+
+@keyframes shake {
+0% { transform: translate(1px, 1px) rotate(0deg); }
+10% { transform: translate(-1px, -2px) rotate(-1deg); }
+20% { transform: translate(-3px, 0px) rotate(1deg); }
+30% { transform: translate(3px, 2px) rotate(0deg); }
+40% { transform: translate(1px, -1px) rotate(1deg); }
+50% { transform: translate(-1px, 2px) rotate(-1deg); }
+60% { transform: translate(-3px, 1px) rotate(0deg); }
+70% { transform: translate(3px, 1px) rotate(-1deg); }
+80% { transform: translate(-1px, -1px) rotate(1deg); }
+90% { transform: translate(1px, 2px) rotate(0deg); }
+100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.float-animation {
+animation: float 3s infinite;
+}
+
+@keyframes float {
+0% { transform: translateY(0); }
+50% { transform: translateY(-20px); }
+100% { transform: translateY(0); }
+}
+
+
+
+/* CSS for pop up  */
+.popup-overlay {
+  
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.5); 
+z-index: 1;
+display: flex;
+display: none;
+position: fixed;
+justify-content: center;
+align-items: center;
+}
+
+.popup-content {
+background-color: #34d5db;
+padding: 8%;
+border-radius: 10px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
+font-size: 30px;
+text-align: center;
+opacity: 1;
+}
+
+.popup-content button {
+padding: 10px 20px;
+background-color: #0a158d;
+color: #fff;
+border: none;
+border-radius: 10px;
+cursor: pointer;
+margin: 5px;
+font-size: 18px;
+}
+
+.popup-content button:hover {
+background-color: #2980b9;
+}
+
+.popup-content button.no {
+background-color: #e74c3c;
+}
+
+.popup-content button.no:hover {
+background-color: #c0392b;
+}
+.custom-image {
+  width: 20vw;
+  height: 20vw;
+  border-radius: 50%;
+}
+
+.custom-image:hover {
+  animation: shake 0.5s;
+  animation-iteration-count: infinite;
+  border-radius: 50%;
+}
+
+  

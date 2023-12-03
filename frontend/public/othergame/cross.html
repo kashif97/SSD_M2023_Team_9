@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confetti Explosion</title>
+  <style>
+    body {
+      overflow: hidden;
+      margin: 0;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .confetti-land {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .confetti {
+      width: 1rem;
+      height: 1rem;
+      display: inline-block;
+      position: absolute;
+      top: -1rem;
+      left: 0;
+      z-index: 50;
+    }
+
+    .confetti .rotate {
+      animation: driftyRotate 1s infinite both ease-in-out;
+      perspective: 1000;
+    }
+
+    .confetti .askew {
+      background: linear-gradient(
+        var(--grad-direction, to bottom),
+        hsl(63, 100%, 50%) 25%,
+        hsl(23, 100%, 50%) 0% 66.667%,
+        hsl(43, 100%, 100%) 0% 100%);
+      transform: skewY(10deg);
+      width: 2rem;
+      height: 3.2rem;
+      animation: drifty 1s infinite alternate both ease-in-out;
+      perspective: 1000;
+      clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+    }
+
+    .confetti:nth-of-type(7n) .askew {
+      animation-delay: -.6s;
+      animation-duration: 2.25s;
+    }
+    
+    /* ... Add other nth-of-type rules here ... */
+
+    .confetti:nth-of-type(9n + 8) .rotate {
+      animation-duration: 1.78s;
+    }
+
+    @keyframes drifty {
+      0% {
+        transform: skewY(10deg) translate3d(-250%, 0, 0);
+      }
+      100% {
+        transform: skewY(-12deg) translate3d(250%, 0, 0);
+      }
+    }
+
+    @keyframes driftyRotate {
+      0% {
+        transform: rotateX(0);
+      }
+      100% {
+        transform: rotateX(359deg);
+      }
+    }
+
+    select {
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      font-size: 1rem;
+      z-index: 100;
+    }
+
+    [data-type=leaves] .confetti:nth-child(4n) {
+      color: hsl(343, 80%, 30%);
+    }
+
+    [data-type=leaves] .confetti:nth-child(4n + 1) {
+      color: hsl(103, 80%, 30%);
+    }
+
+    /* ... Add other data-type rules here ... */
+  </style>
+</head>
+<body>
+  <div class="confetti-land">
+    <!-- Confetti will be added dynamically here -->
+  </div>
+  
+  <button onclick="startConfetti()">Start Animation</button>
+  
+  <script>
+    var confettiPlayers = [];
+    var animationStarted = false;
+  
+    function makeItConfetti() {
+      var confettiLand = document.querySelector('.confetti-land');
+  
+      if (!confettiLand) {
+        return false;
+      }
+  
+      for (var i = 0; i < 60; ++i) {
+        var confetti = document.createElement('div');
+        confetti.classList.add('confetti');
+        confetti.innerHTML = '<div class="rotate"><div class="askew"></div></div>';
+        confettiLand.appendChild(confetti);
+  
+        var scale = Math.random() * 0.7 + 0.3;
+        var player = confetti.animate([
+          { transform: `translate3d(${(i / 60 * 100)}vw,-5vh,0) scale(${scale}) rotate(0turn)`, opacity: scale },
+          { transform: `translate3d(${(i / 60 * 100 + 10)}vw,105vh,0) scale(${scale}) rotate(${ Math.random() > 0.5 ? '' : '-'}2turn)`, opacity: 1 }
+        ], {
+          duration: Math.random() * 3000 + 4000,
+          iterations: Infinity,
+          delay: -(Math.random() * 7000)
+        });
+  
+        confettiPlayers.push(player);
+      }
+    }
+  
+    function startConfetti() {
+      if (!animationStarted) {
+        makeItConfetti();
+        animationStarted = true;
+        document.querySelector('button').style.display = 'none'; // Hide the button after animation starts
+      }
+    }
+  
+    // Initial setup
+    onChange({currentTarget: {value: 'bookmarks'}});
+    document.getElementById('type').addEventListener('change', onChange);
+  
+    function onChange(e) {
+      document.body.setAttribute('data-type', e.currentTarget.value);
+      confettiPlayers.forEach(player => player.playbackRate = e.currentTarget.value === 'bookmarks' ? 2 : 1);
+    }
+  </script>
+  
+  </body>
+  </html>

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="style_match_pair.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+  <style>
+    
+    body {
+      background-image: url('images/7958427.jpg');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+  
+    }
+
+    .game-container {
+     
+     max-width: 800px; }
+
+   
+      @keyframes spreadAnimation {
+    from {
+        transform: translateY(50%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+.card-container {
+  
+    animation: spreadAnimation 2s ease-in-out;
+    grid-template-columns: repeat(3, 1fr);
+    
+}
+  
+   
+
+    .card {
+      width: 200px;
+      height: 250px;
+      cursor: pointer;
+    }
+    /* CSS for the modal */
+
+@media screen and (max-width: 900px) {
+  .game-container {
+    max-width: 500px;
+
+  }
+  .card {
+      width: 100px;
+      height: 150px;
+    }
+   
+}
+@media screen and (max-width: 640px) {
+  .game-container {
+    max-width: 400px;
+    margin-top: 100px;
+  
+  }
+  .card {
+      width: 100px;
+      height: 150px;
+    }
+   
+
+ 
+}
+
+  </style>
+</head>
+<body>
+  <div class="confetti-land">
+    <!-- Confetti will be added dynamically here -->
+  </div>
+  <a href="index.html">
+    <button id="home-button" class="home-button">
+      <i class="fas fa-home"></i>
+    </button>
+  </a>
+  <audio id="background-music" autoplay loop>
+    <source src="sounds_effect/6-Happy-Commercial-Piano(chosic.com).mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <div id="showCrossButton"></div>
+  <div id="showCheckmarkButton" ></div>
+ 
+
+  <button id="toggle-music-button" class="sound-control-button">
+    <i class="fas fa-volume-up"></i>
+  </button>
+  
+  <div class="game-container">
+    <h1>What goes together</h1>
+    <div class="game-info">
+      <span id="time">Time: 0:00</span>
+      <span id="score">Score: 0/3</span> 
+    </div>
+
+    <div class="card-container">
+    </div>
+  </div>
+
+  <script>
+     document.addEventListener('DOMContentLoaded', function() {
+      const backgroundMusic = document.getElementById('background-music');
+      const toggleMusicButton = document.getElementById('toggle-music-button');
+
+      toggleMusicButton.addEventListener('click', function() {
+        if (backgroundMusic.paused) {
+          backgroundMusic.play();
+          toggleMusicButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+        } else {
+          backgroundMusic.pause();
+          toggleMusicButton.innerHTML = '<i class="fas fa-volume-mute"></i>';
+        }
+      });
+    });
+    let flippedCards = [];
+    let matchedPairs = 0;
+    let score = 0;
+
+    let startTime = 0;
+    let timerInterval;
+    let elapsedTimeInSeconds = 0;
+    const maxAllowedTimeInSeconds = 90; 
+
+    const imageUrls1 = [
+      'images/ball.jpeg',
+      'images/carriage.png',
+      'images/dance.jpeg',
+      'images/egg.jpeg',
+      'images/goat.jpeg',
+      'images/key.png',
+      'images/needle.jpeg',
+      'images/shoes.jpeg',
+    ];
+
+    const imageUrls2 = [
+      'images/bat.jpeg',
+      'images/horse.jpeg',
+      'images/music.jpeg',
+      'images/hen.jpeg',
+      'images/grass.jpeg',
+      'images/lock.jpeg',
+      'images/thread.jpeg',
+      'images/socks.jpeg',
+    ];
+
+    const isMatched = new Array(imageUrls1.length).fill(false);
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function assignImagesToCards() {
+      const cardContainer = document.querySelector('.card-container');
+      const shuffledIndices = [...Array(imageUrls1.length).keys()];
+      shuffleArray(shuffledIndices);
+
+      
+      const selectedIndices = shuffledIndices.slice(0, 3);
+
+      selectedIndices.forEach((index) => {
+        const card = createCard(index, imageUrls1[index]);
+        cardContainer.appendChild(card);
+      });
+
+      selectedIndices.forEach((index) => {
+        const card = createCard(index, imageUrls2[index]);
+        cardContainer.appendChild(card);
+      });
+
+ 
+      shuffleArray(cardContainer.children);
+    }
+    
+
+    function createCard(index, imageUrl) {
+      const card = document.createElement('div');
+      card.classList.add('card');
+      card.onclick = () => flipCard(card, index);
+
+      const cardInner = document.createElement('div');
+      cardInner.classList.add('card-inner');
+
+      const cardFront = document.createElement('div');
+      cardFront.classList.add('card-front');
+      const cardImage = document.createElement('img');
+    cardImage.src = "images/playing_card_back_by_feivelyn_defaezm-414w-2x.jpg"; // Set the image source
+    cardImage.alt = `Card ${index + 1}`; // Set alt text for accessibility
+    cardFront.appendChild(cardImage);
+
+
+      const cardBack = document.createElement('div');
+      cardBack.classList.add('card-back');
+      cardBack.style.backgroundImage = `url(${imageUrl})`;
+
+      cardInner.appendChild(cardFront);
+      cardInner.appendChild(cardBack);
+      card.appendChild(cardInner);
+
+      return card;
+    }
+
+    function startTimer() {
+      startTime = Date.now();
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      const currentTime = Date.now();
+      elapsedTimeInSeconds = Math.floor((currentTime - startTime) / 1000);
+      const minutes = Math.floor(elapsedTimeInSeconds / 60);
+      const seconds = elapsedTimeInSeconds % 60;
+      document.getElementById('time').textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+      if (elapsedTimeInSeconds >= maxAllowedTimeInSeconds) {
+    stopTimer();
+    showLossPopup();
+      }
+    }
+    function showLossPopup() {
+  const modalContainer = document.createElement('div');
+  modalContainer.className = 'modal';
+
+  const modalContent = document.createElement('div');
+  modalContent.className = 'modal-content';
+
+  const closeButton = document.createElement('span');
+  closeButton.className = 'close-button';
+  closeButton.innerHTML = '&times;';
+  closeButton.onclick = closePopup;
+
+  const modalTitle = document.createElement('h2');
+  modalTitle.textContent = 'Game Over';
+
+  const modalText = document.createElement('p');
+  modalText.textContent = 'Sorry, you ran out of time. Better luck next time!';
+
+  const playAgainButton = document.createElement('button');
+  playAgainButton.textContent = 'Play Again';
+  playAgainButton.onclick = playAgain;
+
+  modalContent.appendChild(closeButton);
+  modalContent.appendChild(modalTitle);
+  modalContent.appendChild(modalText);
+  modalContent.appendChild(playAgainButton);
+
+  modalContainer.appendChild(modalContent);
+  document.body.appendChild(modalContainer);
+
+  modalContainer.style.display = 'block';
+}
+
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+    }
+
+    function flipCard(card, index) {
+      if (flippedCards.length < 2 && !isMatched[index]) {
+        card.classList.add('flipped');
+        flippedCards.push({ card, index });
+        if (flippedCards.length === 2) {
+          setTimeout(checkForMatch, 1000);
+        }
+      }
+    }
+    function rAudio() {
+   
+   var audio = new Audio('sounds_effect/right.mp3');
+
+   // Play the audiong-answer-20582.mp3
+   audio.play();
+ }
+ function wAudio() {
+
+   var audio = new Audio('sounds_effect/buzzer-or-wrong-answer-20582.mp3');
+
+   // Play the audio
+   audio.play();
+ }
+    function showCheckmarkAndDisable() {
+      rAudio() ;
+      const showCheckmarkButton = document.getElementById('showCheckmarkButton');
+      const checkmarkSign = document.createElement('div');
+      checkmarkSign.className = 'checkmark-sign';
+      checkmarkSign.innerHTML = '\u2713'; // Unicode for checkmark sign
+      document.body.appendChild(checkmarkSign);
+
+      showCheckmarkButton.disabled = true; // Disable the button
+      checkmarkSign.style.display = 'block';
+
+      setTimeout(() => {
+        checkmarkSign.style.display = 'none'; // Hide the checkmark sign after 1 second
+        showCheckmarkButton.disabled = false; // Enable the button
+      }, 1000);
+    }
+    function showCrossAndDisable() {
+      wAudio();
+      const showCrossButton = document.getElementById('showCrossButton');
+      const crossSign = document.createElement('div');
+      crossSign.className = 'cross-sign';
+      crossSign.innerHTML = '\u2717'; // Unicode for cross sign
+      document.body.appendChild(crossSign);
+
+      showCrossButton.disabled = true; // Disable the button
+      crossSign.style.display = 'block';
+
+      setTimeout(() => {
+        crossSign.style.display = 'none'; // Hide the cross sign after 1 second
+        showCrossButton.disabled = false; // Enable the button
+      }, 1000);
+    }
+   
+    function checkForMatch() {
+      const [card1, card2] = flippedCards;
+      const index1 = card1.index;
+      const index2 = card2.index;
+
+      if (index1 === index2) {
+        isMatched[index1] = true;
+
+        card1.card.style.display = 'none';
+        card2.card.style.display = 'none';
+
+        flippedCards = [];
+        matchedPairs += 2;
+        score++;
+        document.getElementById('score').textContent = `Score: ${score}/3`;
+        showCheckmarkAndDisable() ;
+
+        if (matchedPairs === 6) {
+          stopTimer();
+          showpopup(3, elapsedTimeInSeconds);
+        }
+      } else {
+        card1.card.classList.remove('flipped');
+        card2.card.classList.remove('flipped');
+        flippedCards = [];
+        showCrossAndDisable();
+      }
+    }
+    // Define the showpopup function
+function showpopup(finalScore, showTime) {
+  startConfetti();
+  playAudio();
+  // Create a modal container
+  const modalContainer = document.createElement('div');
+  modalContainer.className = 'modal';
+
+  // Create the modal content
+  const modalContent = document.createElement('div');
+  modalContent.className = 'modal-content';
+
+  // Create a close button
+  const closeButton = document.createElement('span');
+  closeButton.className = 'close-button';
+  closeButton.innerHTML = '&times;';
+  closeButton.onclick = closePopup;
+
+  // Create the content for the modal
+  const modalTitle = document.createElement('h2');
+  modalTitle.textContent = 'You Won';
+
+  const modalText = document.createElement('p');
+  modalText.textContent = 'Congratulations! You won the game.';
+
+  const scoreText = document.createElement('p');
+  scoreText.innerHTML = 'Your final score is: <span id="final-score">' + finalScore + '</span>';
+
+  const timeText = document.createElement('p');
+  timeText.innerHTML = 'Time taken: ' + showTime + ' seconds';
+
+  const playAgainButton = document.createElement('button');
+  playAgainButton.textContent = 'Play Again';
+  playAgainButton.onclick = playAgain;
+
+  const nextLevelButton = document.createElement('button');
+  nextLevelButton.textContent = 'Next Level';
+  nextLevelButton.onclick = goToNextLevel;
+
+  // Append the elements to the modal content
+  modalContent.appendChild(closeButton);
+  modalContent.appendChild(modalTitle);
+  modalContent.appendChild(modalText);
+  modalContent.appendChild(scoreText);
+  modalContent.appendChild(timeText);
+  modalContent.appendChild(playAgainButton);
+  modalContent.appendChild(nextLevelButton);
+
+  // Append the modal content to the modal container
+  modalContainer.appendChild(modalContent);
+
+  // Append the modal container to the body
+  document.body.appendChild(modalContainer);
+
+
+  modalContainer.style.display = 'block';
+}
+function playAudio() {
+     
+     var audio = new Audio('sounds_effect/crowd.mp3');
+
+     // Play the audio
+     audio.play();
+   }
+function goToNextLevel() {
+
+  window.location.href = 'what_goes_together_level.html';
+}
+
+
+// Define the closePopup function to close the modal
+function closePopup() {
+  const modalContainer = document.querySelector('.modal');
+  modalContainer.style.display = 'none';
+}
+
+function playAgain() 
+{
+ 
+  closePopup();
+  
+ 
+  window.location.reload();
+}
+
+
+    assignImagesToCards();
+    startTimer();
+    var confettiPlayers = [];
+var animationStarted = false;
+
+function makeItConfetti() {
+  var confettiLand = document.querySelector('.confetti-land');
+
+  if (!confettiLand) {
+    return false;
+  }
+
+  for (var i = 0; i < 60; ++i) {
+    var confetti = document.createElement('div');
+    confetti.classList.add('confetti');
+    confetti.innerHTML = '<div class="rotate"><div class="askew"></div></div>';
+    confettiLand.appendChild(confetti);
+
+    var scale = Math.random() * 0.7 + 0.3;
+    var player = confetti.animate([
+      { transform: `translate3d(${(i / 60 * 100)}vw,-5vh,0) scale(${scale}) rotate(0turn)`, opacity: scale },
+      { transform: `translate3d(${(i / 60 * 100 + 10)}vw,105vh,0) scale(${scale}) rotate(${ Math.random() > 0.5 ? '' : '-'}2turn)`, opacity: 1 }
+    ], {
+      duration: Math.random() * 3000 + 4000,
+      iterations: Infinity,
+      delay: -(Math.random() * 7000)
+    });
+
+    confettiPlayers.push(player);
+  }
+}
+
+function startConfetti() {
+  if (!animationStarted) {
+    makeItConfetti();
+    animationStarted = true;
+    document.querySelector('button').style.display = 'none'; // Hide the button after animation starts
+  }
+}
+
+// Initial setup
+onChange({currentTarget: {value: 'bookmarks'}});
+document.getElementById('type').addEventListener('change', onChange);
+
+function onChange(e) {
+  document.body.setAttribute('data-type', e.currentTarget.value);
+  confettiPlayers.forEach(player => player.playbackRate = e.currentTarget.value === 'bookmarks' ? 2 : 1);
+}
+  </script>
+</body>
